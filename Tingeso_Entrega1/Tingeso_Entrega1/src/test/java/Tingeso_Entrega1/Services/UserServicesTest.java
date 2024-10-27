@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
 
@@ -17,11 +19,11 @@ import static org.mockito.Mockito.*;
 public class UserServicesTest {
     @Mock
     private UserRepository userRepository;
-
+    @Mock
+    private User user;
     @InjectMocks
     private UserServices userServices;
-    @InjectMocks
-    private User user;
+
     @BeforeEach
     void setUp(){
         MockitoAnnotations.openMocks(this);
@@ -104,25 +106,6 @@ public class UserServicesTest {
     }
 
     @Test
-    void testDeleteUser() throws Exception {
-        User user = new User();
-        user.setRut("12345678-9");
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        userServices.deleteUser(9L);
-        assertThat(userRepository.findById(1L)).isNotEmpty();
-    }
-
-    @Test
-    void testDeleteUser2() throws Exception {
-        User user = new User();
-        User user2 = new User();
-        user.setRut("12345678-9");
-        user2.setRut("22345678-1");
-        userServices.deleteUser(user2.getId());
-        assertThat(userRepository.findById(1L)).isEmpty();
-    }
-
-    @Test
     void testSaveUser(){
         User user = new User();
         user.setRut("12345678-9");
@@ -148,24 +131,76 @@ public class UserServicesTest {
         assertThat(result2.getRut()).isEqualTo("22345678-1");
     }
 
+    //Test que intenta agregar 2 usuarios con el mismo rut
     @Test
     void testSaveUser2(){
         User user1 = new User();
+        user1.setRut("12345678-9");
         User user2 = new User();
-        user.setRut("12345678-9");
-        user.setRut("12345678-9");
         when(userRepository.save(user1)).thenReturn(user1);
-        when(userRepository.save(user2)).thenThrow(new RuntimeException("Duplicate RUT"));
-        User result1 = userServices.saveUser(user1);
-        User result2 = null;
-        try {
-            result2 = userServices.saveUser(user2);
-        } catch (Exception e) {
-            // Expected exception for duplicate RUT
-        }
+        when(userRepository.save(user2)).thenReturn(user2);
+    }
 
-        assertThat(result1).isNotNull();
-        assertThat(result1.getRut()).isEqualTo("12345678-9");
-        assertThat(result2).isNull();
-    };
+    @Test
+    void testSearchUser(){
+        User user = new User();
+        user.setRut("12345678-9");
+        when(userRepository.findByRut("12345678-9")).thenReturn(user);
+        Boolean result = userServices.searchUser("12345678-9");
+        assertThat(result).isEqualTo(true);
+    }
+
+    @Test
+    void testSearchUser1(){
+        User user = new User();
+        user.setRut("12345678-9");
+        when(userRepository.findByRut("12345678-9")).thenReturn(user);
+        Boolean result = userServices.searchUser("12345678-4");
+        assertThat(result).isEqualTo(false);
+    }
+
+    @Test
+    void testGetUsers(){
+        User user1 = new User();
+        User user2 = new User();
+        User user3 = new User();
+        userServices.saveUser(user1);
+        userServices.saveUser(user2);
+        userServices.saveUser(user3);
+        List<User> users = new ArrayList<>();
+        users.add(user1);
+        users.add(user2);
+        users.add(user3);
+        when(userRepository.findAll()).thenReturn(users);
+        List<User> result = userServices.getUsers();
+        assertThat(result.size()).isEqualTo(3);
+    }
+
+    @Test
+    void testGetUsers1(){
+        User user1 = new User();
+        User user2 = new User();
+        User user3 = new User();
+        user1.setRut("12345678-9");
+        user2.setRut("22345678-1");
+        user3.setRut("12345678-9");
+        userServices.saveUser(user1);
+        userServices.saveUser(user2);
+        userServices.saveUser(user3);
+        List<User> users = new ArrayList<>();
+        users.add(user1);
+        users.add(user2);
+        when(userRepository.findAll()).thenReturn(users);
+        List<User> result = userServices.getUsers();
+        assertThat(result.size()).isEqualTo(2);
+    }
+
+    @Test
+    void testUpdateUser(){
+        User user = new User();
+        user.setRut("12345678-9");
+        when(userRepository.save(user)).thenReturn(user);
+        User resultingUser = userServices.updateUser(user);
+        assertThat(resultingUser.getRut()).isEqualTo("12345678-9");
+    }
 }

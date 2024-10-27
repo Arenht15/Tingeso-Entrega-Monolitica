@@ -2,10 +2,12 @@ package Tingeso_Entrega1.Services;
 
 import Tingeso_Entrega1.Entities.User;
 import Tingeso_Entrega1.Repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.Math.round;
 
@@ -13,7 +15,6 @@ import static java.lang.Math.round;
 public class UserServices {
     @Autowired
     private UserRepository userRepository;
-
 
     public Double simulateCredit(Integer type, Double amount, Integer term, Double rate) {
         Double M = 0.0;
@@ -66,30 +67,31 @@ public class UserServices {
         return M;
     }
 
-
-    public ArrayList<User> getUsers(){
-        return (ArrayList<User>) userRepository.findAll();
+    @Transactional
+    public Boolean searchUser(String rut) {
+        System.out.println("Buscando usuario con RUT: " + rut);
+        User user = userRepository.findByRut(rut);
+        if (user != null) {
+            // El usuario existe
+            System.out.println("Usuario encontrado: " + user);
+            return true;
+        } else {
+            // El usuario no existe
+            System.out.println("No se encontró ningún usuario con el RUT proporcionado.");
+            return false;
+        }
+    }
+    public List<User> getUsers(){
+        return userRepository.findAll();
     }
 
     public User saveUser(User user){
-        try{
-            userRepository.save(user);
-            return user;
-        } catch (Exception e){
-            return null;
-        }
+        System.out.println(user);
+        return userRepository.save(user);
     }
 
     public User updateUser(User user) {
         return userRepository.save(user);
-    }
-
-    public void deleteUser(Long id) throws Exception {
-        try{
-            userRepository.deleteById(id);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
     }
 
 }

@@ -5,6 +5,9 @@ import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
+
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -28,11 +31,14 @@ public class User {
 
     private String email;
 
+    private LocalDate birthdate;
+
     @Lob
     private byte[] identification;
 
-    private Boolean account_aproved;
+    @OneToMany
+    private List<Credit> creditProcess;
 
     @OneToMany
-    private List<Credit> credit;
+    private List<Credit> creditAproved;
 }
