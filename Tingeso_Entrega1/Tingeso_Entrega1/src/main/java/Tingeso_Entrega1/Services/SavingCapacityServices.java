@@ -15,6 +15,13 @@ public class SavingCapacityServices {
     public SavingCapacity saveSavingCapacity(SavingCapacity sc){
         return savingCapacityRepository.save(sc);
     }
+    public SavingCapacity searchSavingCapacity(Long id){
+        try {
+            return savingCapacityRepository.findById(id).get();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     public Boolean calculateSavingHistory(SavingCapacity sc){
         for (int i = 0; i < sc.getWithdrawalHistory().size(); i++) {

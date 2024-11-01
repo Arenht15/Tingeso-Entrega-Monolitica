@@ -19,14 +19,16 @@ public class SavingCapacity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
     private Long id;
-    private Long idCredit; // id of the user
     private Double ScAmount; // saving capacity of the user
     private Integer savingYears; // years of the saving capacity
     private Double savingAmountAcum; // amount of the saving capacity
     @ElementCollection
+    @CollectionTable(name = "saving_history", joinColumns = @JoinColumn(name = "saving_capacity_id"))
     private List<Double> SavingHistory; // saving history of the user
     @ElementCollection
+    @CollectionTable(name = "withdrawal_history", joinColumns = @JoinColumn(name = "saving_capacity_id"))
     private List<Double> WithdrawalHistory; // saving history of the user
     @ElementCollection
+    @CollectionTable(name = "deposit_history", joinColumns = @JoinColumn(name = "saving_capacity_id"))
     private List<Double> DepositHistory; // saving history of the user
 }

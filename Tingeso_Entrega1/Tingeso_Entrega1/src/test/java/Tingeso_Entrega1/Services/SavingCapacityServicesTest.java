@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
@@ -31,7 +30,6 @@ public class SavingCapacityServicesTest {
     @Test
     void saveSavingCapacity() {
         SavingCapacity sc = new SavingCapacity();
-        sc.setIdCredit(1L);
         sc.setScAmount(100.0);
         sc.setSavingYears(5);
         sc.setSavingAmountAcum(500.0);
@@ -51,14 +49,12 @@ public class SavingCapacityServicesTest {
     void saveSavingCapacity2(){
         SavingCapacity sc1 = new SavingCapacity();
         SavingCapacity sc2 = new SavingCapacity();
-        sc1.setIdCredit(1L);
         sc1.setScAmount(100.0);
         sc1.setSavingYears(5);
         sc1.setSavingAmountAcum(500.0);
         sc1.setSavingHistory(Arrays.asList(50000.0, 100000.0, 200000.0,
                 250000.0, 350000.0, 400000.0, 470000.0, 500000.0,
                 550000.0, 590000.0, 620000.0, 6450000.0));
-        sc2.setIdCredit(2L);
         sc2.setScAmount(100.0);
         sc2.setSavingYears(5);
         sc2.setSavingAmountAcum(500.0);

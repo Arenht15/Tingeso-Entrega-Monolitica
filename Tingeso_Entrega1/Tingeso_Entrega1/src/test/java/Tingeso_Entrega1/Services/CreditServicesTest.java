@@ -29,7 +29,7 @@ public class CreditServicesTest {
             Credit credit = new Credit();
             credit.setId_user(1L);
             credit.setAmountDebs(100.0);
-            credit.setFeeCredit(5.0);
+            credit.setCuota(5.0);
             credit.setIngress(500.0);
             credit.setStatusDicom(-1);
             credit.setAprovedDebs(1);
@@ -37,25 +37,4 @@ public class CreditServicesTest {
             when(creditRepository.save(credit)).thenReturn(credit);
             assertThat(creditServices.saveCredit(credit)).isEqualTo(credit);
         }
-        void saveApplication2() {
-            Credit credit = new Credit();
-            credit.setId_user(1L);
-            credit.setAmountDebs(100.0);
-            credit.setFeeCredit(5.0);
-            credit.setAprovedDebs(1);
-            credit.setAprovedFeeIncome(1);
-            Credit credit2 = new Credit();
-            credit2.setId_user(2L);
-            credit2.setAmountDebs(100.0);
-            credit2.setFeeCredit(5.0);
-            credit2.setAprovedDebs(1);
-            credit2.setAprovedFeeIncome(1);
-            when(creditRepository.save(credit)).thenReturn(credit);
-            when(creditRepository.save(credit2)).thenReturn(credit2);
-            assertThat(CreditRepository.getId(credit)).isEqualTo(credit);
-            assertThat(creditServices.saveCredit(credit2)).isEqualTo(credit2);
-        }
-
-
-
 }

@@ -146,8 +146,8 @@ public class UserServicesTest {
         User user = new User();
         user.setRut("12345678-9");
         when(userRepository.findByRut("12345678-9")).thenReturn(user);
-        Boolean result = userServices.searchUser("12345678-9");
-        assertThat(result).isEqualTo(true);
+        User result = userServices.searchUser("12345678-9");
+        assertThat(result).isEqualTo(user);
     }
 
     @Test
@@ -155,8 +155,8 @@ public class UserServicesTest {
         User user = new User();
         user.setRut("12345678-9");
         when(userRepository.findByRut("12345678-9")).thenReturn(user);
-        Boolean result = userServices.searchUser("12345678-4");
-        assertThat(result).isEqualTo(false);
+        User result = userServices.searchUser("12345678-4");
+        assertThat(result).isEqualTo(null);
     }
 
     @Test

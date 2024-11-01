@@ -1,10 +1,13 @@
 package Tingeso_Entrega1.Services;
 
 import Tingeso_Entrega1.Entities.Credit;
+import Tingeso_Entrega1.Entities.SavingCapacity;
 import Tingeso_Entrega1.Repositories.CreditRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.function.IntPredicate;
 
 @Service
@@ -14,18 +17,32 @@ public class CreditServices {
     @Autowired
     private SavingCapacityServices savingCapacityServices;
 
+    public List<Credit> getCredits(){
+        return creditRepository.findCredits();
+    }
     public Credit saveCredit(Credit c) {
         creditRepository.save(c);
         return c;
     }
+    public Credit searchCredit(Long id){
+        try {
+            return creditRepository.findById(id).get();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public List<Credit> findCreditsByUserId(Long userId){
+        return creditRepository.findCreditsByUserId(userId);
+    }
 
     public Credit feeIncome(Credit c) {
-        double numerator = c.getFeeCredit() / c.getIngress();
+        double numerator = c.getCuota() / c.getIngress();
         double feeIncome = numerator * 100;
         if (feeIncome > 0.0 && feeIncome < 35.0) {
-            c.setAprovedFeeIncome(0);
-        } else {
             c.setAprovedFeeIncome(1);
+        } else {
+            c.setAprovedFeeIncome(0);
         }
         return c;
     }
@@ -39,23 +56,34 @@ public class CreditServices {
         return c;
     }
 
-    /*
-    public application WorkSituacion(application applicationUpdate, Integer ){
-        if(status == 0){
-            applicationUpdate.setWorkSituacion(0);
+
+    public Credit WorkSituacion(Credit c){
+        if(c.getTypeJob() == 0){
+            if(c.getSeniority() < 1){
+                c.setAprovedEmployed(0);
+            }else{
+                c.setAprovedEmployed(1);
+            }
         } else{
-            applicationUpdate.setWorkSituacion(1);
+            Double ingressAcum = c.getIngressAcum();
+
+            if(c.getSeniority() < 6000000.0){
+                c.setAprovedEmployed(0);
+            }else{
+                c.setAprovedEmployed(1);
+            }
         }
-        return applicationUpdate;
+        return c;
 
     }
-    */
+
     public Credit Debs(Credit c) {
         if (c.getAmountDebs() == 0.0) {
             c.setAprovedDebs(1);
-        } else {
+        }else {
             double midIngres = c.getIngress() * 0.5;
-            if (c.getAmountDebs() < midIngres) {
+            double deb = c.getAmountDebs() + c.getCuota();
+            if (deb < midIngres) {
                 c.setAprovedDebs(1);
             } else {
                 c.setAprovedDebs(0);
@@ -65,7 +93,8 @@ public class CreditServices {
     }
 
     public Credit financingCredit(Credit c) {
-        Double porcent = c.getPorcent();
+        Double porcent = c.getPorcent()/100;
+        System.out.println("Porcentaje calulado" + porcent);
         if(porcent <= 0.0 || porcent > 0.8){
             c.setAmountApproved(0);
         }else{
@@ -73,20 +102,27 @@ public class CreditServices {
             if(type == 4){
               if(porcent < 0.5){
                     c.setAmountApproved(1);
+              }else{
+                  c.setAmountApproved(0);
               }
-              c.setAmountApproved(0);
             }else if (type == 3) {
                 if (porcent < 0.6) {
                     c.setAmountApproved(1);
+                }else{
+                    c.setAmountApproved(0);
                 }
-                c.setAmountApproved(0);
             }else if(type == 2) {
                 if (porcent < 0.7) {
                     c.setAmountApproved(1);
+                }else{
+                    c.setAmountApproved(0);
                 }
-                c.setAmountApproved(0);
-            }else{
-                c.setAmountApproved(1);
+            }else if(type == 1) {
+                if (porcent < 0.8) {
+                    c.setAmountApproved(1);
+                }else{
+                    c.setAmountApproved(0);
+                }
             }
         }
         return c;
@@ -98,7 +134,7 @@ public class CreditServices {
             c.setAprovedYears(0);
         } else {
             double term = c.getTerm();
-            double y = years + term;
+            double y = years + term + 5;
             if (y < 75) {
                 c.setAprovedYears(1);
             } else {
@@ -107,44 +143,52 @@ public class CreditServices {
         }
         return c;
     }
-    /*
+    public Integer calculateYears(LocalDate birthdate){
+        System.out.println(birthdate);
+        LocalDate now = LocalDate.now();
+        Integer years = now.getYear() - birthdate.getYear();
+        return years;
+    }
+
+
     public Credit SavingCapacity(Credit c) {
+        SavingCapacity sc = savingCapacityServices.searchSavingCapacity(c.getId_savingCapacity());
         int ptj = 5;
         Double tenProcent = c.getAmount() * 0.1;
-        if(c.getSavingCapacity().getScAmount() > tenProcent){
+        if(sc.getScAmount() > tenProcent){
             ptj = ptj - 1;
         }
-        if(savingCapacityServices.calculateSavingHistory(c.getSavingCapacity())){
+        if(savingCapacityServices.calculateSavingHistory(sc)){
             ptj = ptj - 1;
-        }if(savingCapacityServices.calculateDepositHistory(c.getSavingCapacity(), c.getIngress())){
+        }if(savingCapacityServices.calculateDepositHistory(sc, c.getIngress())){
             ptj = ptj - 1;
-        }if(savingCapacityServices.calculateWithdrawals(c.getSavingCapacity())){
+        }if(savingCapacityServices.calculateWithdrawals(sc)){
             ptj = ptj - 1;
-        }if(c.getSavingCapacity().getSavingYears() <2){
-            if(c.getSavingCapacity().getSavingAmountAcum() < c.getAmount()*0.2){
+        }if(sc.getSavingYears() <2){
+            if(sc.getSavingAmountAcum() < c.getAmount()*0.2){
                 ptj = ptj - 1;
             }
         }else{
-            if(c.getSavingCapacity().getSavingAmountAcum() < c.getAmount()*0.1){
+            if(sc.getSavingAmountAcum() < c.getAmount()*0.1){
                 ptj = ptj - 1;
             }
         }
-        if(ptj < 3){
+        if(ptj < 4){
             c.setAprovedSavingCapacity(0);
         }else{
             c.setAprovedSavingCapacity(1);
         }
         return c;
     }
-    */
 
     public void calculateCredit(Credit c) {
         c = feeIncome(c); // feeIncome evaluation
         c = creditHistory(c); // credit history evaluation
+        c = WorkSituacion(c); // work situation evaluation
         c = Debs(c); // debs evaluation
         c = financingCredit(c); // financing credit evaluation
         c = Verifyyears(c); // years old evaluation
-        //c = SavingCapacity(c); // saving capacity evaluation
+        c = SavingCapacity(c); // saving capacity evaluation
         evaluateCredit(c); // evaluate credit
     }
 
@@ -166,9 +210,12 @@ public class CreditServices {
     }
 
     public Credit CalculateCost(Credit c){
-        double cost = c.getFeeCredit()*0.3 + 20000; // fire and life insurance
-        double costM = cost + c.getFeeCredit(); // month cost
-        double costT = costM*c.getTerm() + c.getFeeCredit()*0.1; // total cost
+        double cost = c.getCuota()*0.3 + 20000; // fire and life insurance
+        c.setCreditLifeInsurance(cost);
+        double costM = cost + c.getCuota(); // month cost
+        double Commission = c.getAmount()*0.01;
+        c.setCreditJob(Commission);
+        double costT = costM*(c.getTerm()*12) + Commission; // total cost
         c.setCostM(costM);
         c.setCostT(costT);
         return c;

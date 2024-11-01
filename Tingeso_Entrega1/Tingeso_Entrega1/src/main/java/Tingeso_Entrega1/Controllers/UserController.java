@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.charset.StandardCharsets;
 import java.io.IOException;
 import java.time.LocalDate;
 
@@ -43,7 +44,9 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         }
-        return ResponseEntity.ok(userServices.saveUser(user));
+
+        user = userServices.saveUser(user);
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/simulateCredit/{type}/{amount}/{term}/{rate}")
@@ -53,8 +56,8 @@ public class UserController {
         return ResponseEntity.ok(simulation);
     }
     @GetMapping("/SearchUser")
-    public ResponseEntity<Boolean> searchUser(@RequestParam String rut){
-        Boolean bandera = userServices.searchUser(rut);
+    public ResponseEntity<User> searchUser(@RequestParam String rut){
+        User bandera = userServices.searchUser(rut);
         return ResponseEntity.ok(bandera);
     }
 

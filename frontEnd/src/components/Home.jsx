@@ -5,7 +5,6 @@ import {useNavigate} from "react-router-dom";
 const Home = () => {
     const navigate = useNavigate();
     const [anchorEl1, setAnchorEl1] = React.useState(null);
-    const [anchorEl2, setAnchorEl2] = React.useState(null);
 
     return (
         <div className="full-height">
@@ -41,28 +40,15 @@ const Home = () => {
                             }}>Solicitar Credito</MenuItem>
                             <MenuItem onClick={() => {
                                 setAnchorEl1(null);
-                                navigate('/Forms');
+                                navigate('/StatusCredit');
                             }}>Consultar Estados Creditos</MenuItem>
                         </Menu>
                         <Button
                             style={{ color: 'inherit', backgroundColor: '#0b8d0b', width: '450px', alignSelf: 'center' }}
-                            onClick={(event) => setAnchorEl2(event.currentTarget)}
+                            onClick={(event) => navigate("/ListCredit")}
                         >
                             Ejecutivo
                         </Button>
-                        <Menu
-                            anchorEl={anchorEl2}
-                            open={Boolean(anchorEl2)}
-                            onClose={() => setAnchorEl2(null)}
-                            MenuListProps={{ style: { width: anchorEl2 ? anchorEl2.clientWidth : undefined,
-                                    textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' } }}>
-                            <MenuItem onClick={() => {
-                                setAnchorEl2(null);
-                            }}>Option 1</MenuItem>
-                            <MenuItem onClick={() => {
-                                setAnchorEl2(null);
-                            }}>Option 2</MenuItem>
-                        </Menu>
                     </div>
                 </Toolbar>
             </AppBar>

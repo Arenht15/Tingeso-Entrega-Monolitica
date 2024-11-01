@@ -21,12 +21,13 @@ public class Credit {
     private Long id; // id of the application
 
     private Long id_user; // id of the user that made the application
+    private String rut; // rut of the user
     //Credit data
     private Integer type; // type of the credit
     private Double amount; // amount of the credit
     private Integer term; // term of the credit
     private Double rate; // annual credit rate
-    private Double feeCredit; // fee of the credit
+    private Double cuota; // fee of the credit
 
     //Fee/income evaluation data
     private byte[] ingressFile; // file of the ingress
@@ -40,8 +41,8 @@ public class Credit {
     //file of paySheet, jobCertificate and status of the employment
     //If the user is employed then only uses the jobCertificate and seniority but
     //if the user is "self-employed" worker then uses "the paySheet" and de "incomeFor2Years"
-    private byte[] paySheetFile; // file of the paySheet for unemployed
-    private Integer statusEmployed; // status of the employment
+    private byte[] payFile; // file of the paySheet for unemployed
+    private Integer typeJob; // type of the job
     private Integer seniority; // seniority of the employment
     private double IngressAcum; // Ingress acumulated of the user
     private Integer aprovedEmployed; // status of the employment
@@ -56,6 +57,7 @@ public class Credit {
     private Integer amountApproved; // amount approved of the credit
 
     //Years old of the user
+    private byte[] identidadFile; // file of the birthdate
     private Integer years; // years old of the user
     private Integer aprovedYears; // status of the years old
 
@@ -65,6 +67,9 @@ public class Credit {
     private Integer aprovedSavingCapacity; // status of the saving capacity
 
     //status of the application
+    private Double creditLifeInsurance; // life insurance of the credit
+    private Double creditJob; // job insurance of the credit
+    private Double AdministrationCommission; // administration commission of the credit
     private Double costM; // Month cost of the credit
     private Double costT; // total cost of the credit
     private Integer aprovedApplication; // status of the application

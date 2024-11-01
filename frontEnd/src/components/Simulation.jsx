@@ -19,18 +19,16 @@ const Simulation = () => {
         try {
             const response = await userServices.validUser(rut);
             setErrorRut(response.data);
-            console.log("ErrorRutBack: ", response.data);
             return response.data;
         } catch (e) {
-            console.log("No se pudo obtener el rut.", e);
+            console.log("Hubo un error al encontrar el monto", e);
             return false;
         }
     }
 
     const getSimulatedAmount = async (type, amount, term, rate) => {
         const isValidRut = await existeRut(rut);
-        console.log("ErrorRutkjhlh: ", ErrorRut);
-        if (!isValidRut) {
+        if (Object.keys(isValidRut).length === 0) {
             alert("Debe Registrarse para poder simular un credito");
             return;
         }
@@ -41,7 +39,7 @@ const Simulation = () => {
                 setShowSimulatedAmount(true);
             })
             .catch((e) => {
-                console.log("No se pudo obtener el monto simulado.", e);
+                alert("Hubo un error al calcular el credito", e);
             });
     }
 
@@ -91,7 +89,7 @@ const Simulation = () => {
                     <TextField
                         label="Tasa De Interes"
                         value={rate || ""}
-                        onChange={e => setRate(e.target.value)}
+                        onChange={e => setRate(e.target.value.replace(/[^0-9.]/g, ''))}
                         variant="outlined"
                         fullWidth
                         margin="normal"
@@ -101,7 +99,7 @@ const Simulation = () => {
                     <TextField
                         label="Plazo Maximo De Pago (En Años)"
                         value={term || ""}
-                        onChange={e => setYears(e.target.value)}
+                        onChange={e => setYears(e.target.value.replace(/[^0-9]/g, ''))}
                         variant="outlined"
                         fullWidth
                         margin="normal"
@@ -112,7 +110,7 @@ const Simulation = () => {
                 <TextField
                     label="Monto"
                     value={amount || ""}
-                    onChange={e => setAmount(e.target.value)}
+                    onChange={e => setAmount(e.target.value.replace(/[^0-9]/g, ''))}
                     variant="outlined"
                     fullWidth
                     margin="normal"

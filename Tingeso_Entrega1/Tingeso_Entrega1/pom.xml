@@ -76,6 +76,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>Tingeso_Backend_Entrega1</finalName>
 	</build>
 
 </project>

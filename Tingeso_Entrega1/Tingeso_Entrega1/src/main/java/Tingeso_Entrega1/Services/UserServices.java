@@ -68,17 +68,12 @@ public class UserServices {
     }
 
     @Transactional
-    public Boolean searchUser(String rut) {
-        System.out.println("Buscando usuario con RUT: " + rut);
-        User user = userRepository.findByRut(rut);
-        if (user != null) {
-            // El usuario existe
-            System.out.println("Usuario encontrado: " + user);
-            return true;
-        } else {
-            // El usuario no existe
-            System.out.println("No se encontró ningún usuario con el RUT proporcionado.");
-            return false;
+    public User searchUser(String rut) {
+        try{
+            User user = userRepository.findByRut(rut);
+            return user;
+        }catch (Exception e){
+            return null;
         }
     }
     public List<User> getUsers(){

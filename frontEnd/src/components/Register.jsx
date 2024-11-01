@@ -99,15 +99,6 @@ const Register = () => {
         validateRUT(rut);
         validateEmail(email);
         await new Promise(resolve => setTimeout(resolve, 1));
-        console.log("rutError: ", rutError);
-        console.log("emailError: ", emailError);
-        console.log("birthdateError: ", birthdateError);
-        console.log("rut: ", rut);
-        console.log("email: ", email);
-        console.log("name: ", name);
-        console.log("surname: ", surname);
-        console.log("birthdate: ", birthdate);
-        console.log("identification: ", identification);
 
         if (!rut || !email || !name || !surname || !birthdate || !identification) {
             alert('Todos los campos son obligatorios.');
@@ -122,7 +113,7 @@ const Register = () => {
             }
             return;
         }
-        console.log("Validandocion realizada.");
+
         const formattedBirthdate = `${birthdate.year}-${String(birthdate.month).padStart(2, '0')}-${String(birthdate.day).padStart(2, '0')}`;
         const formData = new FormData();
         formData.append("rut", rut);
@@ -130,9 +121,8 @@ const Register = () => {
         formData.append("name", name);
         formData.append("surname", surname);
         formData.append("birthdate", formattedBirthdate);
-        console.log("Identificacion: ", identification);
         formData.append("identification", identification);
-        console.log("FormData creado");
+
         userServices.save(formData)
             .then((response) => {
                 console.log("Usuario ha sido añadido.", response.data);
@@ -213,19 +203,19 @@ const Register = () => {
                         <Box sx={{ display: 'flex', gap: '10px' }}>
                             <TextField label="Nombre"
                                        value = {name}
-                                       onChange={(e)=>setName(e.target.value)}
+                                       onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z\s]/g, ''))}
                                        variant="outlined" fullWidth margin="normal"
                                        placeholder="Ej: Juan" required />
                             <TextField label="Apellido" variant="outlined" fullWidth margin="normal"
                                         value = {surname}
-                                        onChange={(e)=>setSurname(e.target.value)}
+                                        onChange={(e)=>setSurname(e.target.value.replace(/[^a-zA-Z\s]/g, ''))}
                                        placeholder="Ej: Pérez" required />
                         </Box>
                         <Box sx={{ display: 'flex', justifyContent: 'center', gap: '20px', alignItems: 'center' }}>
                             <TextField
                                 label="Año de Nacimiento"
                                 value={birthdate.year || ""}
-                                onChange={e => setBirthDate({ ...birthdate, year: e.target.value })}
+                                onChange={e => setBirthDate({ ...birthdate, year: e.target.value.replace(/[^0-9]/g, '') })}
                                 variant="outlined"
                                 fullWidth
                                 margin="dense"
@@ -236,18 +226,18 @@ const Register = () => {
                             <TextField
                                 label="Mes de Nacimiento"
                                 value={birthdate.month || ""}
-                                onChange={e => setBirthDate({ ...birthdate, month: e.target.value })}
+                                onChange={e => setBirthDate({ ...birthdate, month: e.target.value.replace(/[^0-9]/g, '') })}
                                 variant="outlined"
                                 fullWidth
                                 margin="dense"
-                                placeholder="Ej: 25"
+                                placeholder="Ej: 9"
                                 required
                                 style={{ width: '30%' }}
                             />
                             <TextField
                                 label="Día de Nacimiento"
                                 value={birthdate.day || ""}
-                                onChange={e => setBirthDate({ ...birthdate, day: e.target.value })}
+                                onChange={e => setBirthDate({ ...birthdate, day: e.target.value.replace(/[^0-9]/g, '') })}
                                 variant="outlined"
                                 fullWidth
                                 margin="dense"

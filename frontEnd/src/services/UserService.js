@@ -15,6 +15,9 @@ import httpClient from "../http-commons.js";
     const validUser = (rut) => {
         return httpClient.get("/prestabanco/user/SearchUser", { params: { rut } });
     }
+
+
+
 export default {
     simulateCredit,
     save,
