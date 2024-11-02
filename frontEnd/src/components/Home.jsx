@@ -57,7 +57,7 @@ const Home = () => {
                     Bienvenido a Presta Banco
                 </Typography>
                 <Typography variant="h5" style={{color: '#555'}}>
-                    El banco ideal para realizar préstamos.
+                    El Banco Ideal Para Realizar Préstamos.
                 </Typography>
             </Container>
             <style>{`
