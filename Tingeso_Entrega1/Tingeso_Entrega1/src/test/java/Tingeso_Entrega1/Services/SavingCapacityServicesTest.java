@@ -197,4 +197,22 @@ public class SavingCapacityServicesTest {
         assertThat(savingCapacityServices.calculateWithdrawals(sc)).isEqualTo(false);
     }
 
+    @Test
+    void searchSavingCapacity() {
+        SavingCapacity sc = new SavingCapacity();
+        sc.setScAmount(100.0);
+        sc.setSavingYears(5);
+        sc.setSavingAmountAcum(500.0);
+        SavingCapacity sc2 = scRepository.save(sc);
+        assertThat(savingCapacityServices.searchSavingCapacity(1L)).isEqualTo(sc2);
+    }
+
+    @Test
+    void searchSavingCapacity2() {
+        SavingCapacity sc = new SavingCapacity();
+        sc.setScAmount(100.0);
+        sc.setSavingYears(5);
+        sc.setSavingAmountAcum(500.0);
+        assertThat(savingCapacityServices.searchSavingCapacity(2L)).isEqualTo(null);
+    }
 }

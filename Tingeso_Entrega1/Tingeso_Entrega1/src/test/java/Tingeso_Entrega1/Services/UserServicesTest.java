@@ -19,8 +19,6 @@ import static org.mockito.Mockito.*;
 public class UserServicesTest {
     @Mock
     private UserRepository userRepository;
-    @Mock
-    private User user;
     @InjectMocks
     private UserServices userServices;
 
@@ -156,6 +154,14 @@ public class UserServicesTest {
         user.setRut("12345678-9");
         when(userRepository.findByRut("12345678-9")).thenReturn(user);
         User result = userServices.searchUser("12345678-4");
+        assertThat(result).isEqualTo(null);
+    }
+
+    @Test
+    void testSearchUser2(){
+        User user = new User();
+        user.setRut("12345678-9");
+        User result = userServices.searchUser("12345678-9");
         assertThat(result).isEqualTo(null);
     }
 

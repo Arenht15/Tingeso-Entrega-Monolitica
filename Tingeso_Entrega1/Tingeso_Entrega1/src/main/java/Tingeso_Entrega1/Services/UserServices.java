@@ -81,7 +81,6 @@ public class UserServices {
     }
 
     public User saveUser(User user){
-        System.out.println(user);
         return userRepository.save(user);
     }
 

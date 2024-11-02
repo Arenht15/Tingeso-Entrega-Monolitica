@@ -36,9 +36,4 @@ public class User {
     @Lob
     private byte[] identification;
 
-    @OneToMany
-    private List<Credit> creditProcess;
-
-    @OneToMany
-    private List<Credit> creditAproved;
 }

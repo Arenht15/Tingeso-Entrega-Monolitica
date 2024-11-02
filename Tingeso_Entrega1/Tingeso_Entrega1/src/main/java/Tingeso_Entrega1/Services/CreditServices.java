@@ -66,8 +66,7 @@ public class CreditServices {
             }
         } else{
             Double ingressAcum = c.getIngressAcum();
-
-            if(c.getSeniority() < 6000000.0){
+            if(ingressAcum < 6000000.0){
                 c.setAprovedEmployed(0);
             }else{
                 c.setAprovedEmployed(1);
@@ -94,31 +93,30 @@ public class CreditServices {
 
     public Credit financingCredit(Credit c) {
         Double porcent = c.getPorcent()/100;
-        System.out.println("Porcentaje calulado" + porcent);
         if(porcent <= 0.0 || porcent > 0.8){
             c.setAmountApproved(0);
         }else{
             Integer type = c.getType();
             if(type == 4){
-              if(porcent < 0.5){
+              if(porcent <= 0.5){
                     c.setAmountApproved(1);
               }else{
                   c.setAmountApproved(0);
               }
             }else if (type == 3) {
-                if (porcent < 0.6) {
+                if (porcent <= 0.6) {
                     c.setAmountApproved(1);
                 }else{
                     c.setAmountApproved(0);
                 }
             }else if(type == 2) {
-                if (porcent < 0.7) {
+                if (porcent <= 0.7) {
                     c.setAmountApproved(1);
                 }else{
                     c.setAmountApproved(0);
                 }
             }else if(type == 1) {
-                if (porcent < 0.8) {
+                if (porcent <= 0.8) {
                     c.setAmountApproved(1);
                 }else{
                     c.setAmountApproved(0);
@@ -144,7 +142,6 @@ public class CreditServices {
         return c;
     }
     public Integer calculateYears(LocalDate birthdate){
-        System.out.println(birthdate);
         LocalDate now = LocalDate.now();
         Integer years = now.getYear() - birthdate.getYear();
         return years;
@@ -164,7 +161,8 @@ public class CreditServices {
             ptj = ptj - 1;
         }if(savingCapacityServices.calculateWithdrawals(sc)){
             ptj = ptj - 1;
-        }if(sc.getSavingYears() <2){
+        }
+        if(sc.getSavingYears() <2){
             if(sc.getSavingAmountAcum() < c.getAmount()*0.2){
                 ptj = ptj - 1;
             }
