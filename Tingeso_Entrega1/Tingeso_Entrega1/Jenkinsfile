@@ -36,7 +36,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'tingeso1', variable: 'dhpsw')]) {
-                        bat 'docker login -u arenht -p %dhpsw%'
+                        bat 'docker login -u arenht -p angelartista'
                     }
                     bat 'docker push arenht/backend_entrega1:latest' // Empuja la imagen a Docker Hub
                 }
