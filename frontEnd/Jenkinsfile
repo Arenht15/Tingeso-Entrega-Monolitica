@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+    tools {
+        nodejs 'nodejs_20_18_0' // Configura la versión de Node.js instalada en Jenkins
+    }
+    stages {
+        stage('Install Dependencies') {
+            steps {
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Arenht15/Tingeso-Entrega-Monolitica']])
+                dir('frontEnd') { // Cambia al directorio 'frontend'
+                    bat 'npm install' // Usa 'bat' para Windows o 'sh' para Linux/Mac
+                }
+            }
+        }
+
+        stage('Build Project') {
+            steps {
+                dir('frontEnd') { // Cambia al directorio 'frontend'
+                    bat 'npm run build' // Genera la versión de producción del frontend
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dir('frontEnd') { // Cambia al directorio 'frontend'
+                        bat 'docker build -t arenht/frontend_entrega1:latest .' // Construye la imagen Docker
+                    }
+                }
+            }
+        }
+
+        stage('Push Image to Docker Hub') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'tingeso1', variable: 'dhpsw')]) {
+                        bat 'docker login -u arenht -p angelartista'
+                    }
+                    bat 'docker push arenht/frontend_entrega1:latest'
+                }
+            }
+        }
+    }
+}
