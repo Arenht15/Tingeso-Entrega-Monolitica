@@ -37,7 +37,6 @@ const Form = () => {
                 console.log("Archivo no es PDF");
                 event.target.value = null; // Limpiar el campo de archivo
             } else {
-                console.log("Archivo subido: ", file);
                 setFile(file);
             }
         }

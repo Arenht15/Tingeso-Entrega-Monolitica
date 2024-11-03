@@ -54,10 +54,10 @@ const Home = () => {
             </AppBar>
             <Container style={{textAlign: 'center', marginTop: '80px', zIndex: 1}}>
                 <Typography variant="h2" gutterBottom style={{color: 'rgba(17,255,0,0.71)'}}>
-                    Bienvenido a Presta Banco
+                    Bienvenido a Presta Banco.
                 </Typography>
                 <Typography variant="h5" style={{color: '#555'}}>
-                    El Banco Ideal Para Realizar Préstamos.
+                    El Banco Ideal Para Realizar Préstamos Más Confiable.
                 </Typography>
             </Container>
             <style>{`
