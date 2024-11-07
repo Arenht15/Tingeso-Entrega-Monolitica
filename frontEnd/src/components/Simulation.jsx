@@ -121,7 +121,7 @@ const Simulation = () => {
                         style={{ backgroundColor: '#01B701' }}
                         fullWidth
                         onClick={(e) => getSimulatedAmount(type, amount, term, rate)}>
-                    Calcular
+                    Calcular Chile
                 </Button>
                 {showSimulatedAmount && (
                     <Typography variant="h6" style={{ marginTop: '20px', color: simulatedAmount !== 0.0 ? 'green' : 'red' }}>
