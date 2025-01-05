@@ -5,15 +5,6 @@ import {AppBar, Toolbar, Container, Typography, Button, TextField, MenuItem, Box
 import {useNavigate} from "react-router-dom";
 const Register = () => {
         const navigate = useNavigate();
-        //Constantes de validacion
-        const [rutError, setRutError] = useState(false);
-        const [rutErrorMessage, setRutErrorMessage] = useState(false);
-        const [emailError, setEmailError] = useState(false);
-        const [emailErrorMessage, setEmailErrorMessage] = useState(false);
-        const [fileError, setFileError] = useState(false);
-        const [fileErrorMessage, setFileErrorMessage] = useState("");
-        const [birthdateError, setBirthdateError] = useState(false);
-        const [birthdateErrorMessage, setBirthdateErrorMessage] = useState("");
         //Constantes de los campos
         const [rut, setRut] = useState("");
         const [email, setEmail] = useState("");
@@ -26,91 +17,62 @@ const Register = () => {
         const file = event.target.files[0];
         if (file) {
             if (file.type !== 'application/pdf') {
-                setFileError(true);
-                setFileErrorMessage('Por favor, suba un archivo PDF.');
+                alert('Por favor, suba un archivo PDF.');
                 event.target.value = null; // Limpiar el campo de archivo
             } else {
                 console.log("Archivo subido: ", file);
-                setFileError(false);
-                setFileErrorMessage('');
                 setIdentification(file);
             }
         }
     };
 
-    const validateBirthdate = () => {
+    const validateBirthdate = (birthdate) => {
         const { year, month, day } = birthdate;
         const currentYear = new Date().getFullYear();
-
-        // Validar año
-        if (year < 1950 || year > currentYear) {
-            setBirthdateError(true);
-            setBirthdateErrorMessage("Algun valor de la fecha de nacimiento esta fuera de rango");
-            return false;
-        }
-
-        // Validar mes
-        if (month < 1 || month > 12) {
-            setBirthdateError(true);
-            setBirthdateErrorMessage("Algun valor de la fecha de nacimiento esta fuera de rango");
-            return false;
-        }
-
-        // Validar día
         const maxDaysInMonth = new Date(year, month, 0).getDate();
-        if (day < 1 || day > maxDaysInMonth) {
-            setBirthdateError(true);
-            setBirthdateErrorMessage("Algun valor de la fecha de nacimiento esta fuera de rango");
-            return false;
+        if (year < 1950 || year > currentYear || month < 1 || month > 12 || day < 1 || day > maxDaysInMonth) {
+            return true;
         }
-
-        // Si todo está bien
-        setBirthdateError(false);
-        setBirthdateErrorMessage("");
-        return true;
+        return false;
     };
 
     const validateRUT = (rut) => {
         const regex = /^[0-9]{7,8}-[0-9kK]{1}$/;
         if (!regex.test(rut)) {
             console.log("Rut incorrecto");
-            setRutError(true);
-        } else {
-            setRutError(false);
-            setRutErrorMessage('');
+            return true;
         }
+        return false;
     };
 
     const validateEmail = (email) => {
         //Se verifica que el email tenga un formato correcto
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!regex.test(email)) {
-            setEmailError(true);
+            return true;
         } else {
-            setEmailError(false);
-            setEmailErrorMessage('');
+            return false;
         }
     };
 
     const saveUser = async (e) => {
         e.preventDefault();
-
-        validateBirthdate(birthdate);
-        validateRUT(rut);
-        validateEmail(email);
         await new Promise(resolve => setTimeout(resolve, 1));
 
         if (!rut || !email || !name || !surname || !birthdate || !identification) {
             alert('Todos los campos son obligatorios.');
             return;
         }
-        if (rutError || emailError || birthdateError) {
-            if (rutError) {
-                setRutErrorMessage('El formato del RUT es incorrecto. Debe ser del tipo 12345678-9.');
-            }
-            if (emailError) {
-                setEmailErrorMessage('El formato del correo electrónico es incorrecto.');
-            }
+        if (validateRUT(rut)){
+            alert('El formato del RUT es incorrecto. Debe ser del tipo 12345678-9.');
+            return;
+        }
+        if (validateBirthdate(birthdate)){
+            alert("Algun valor de la fecha de nacimiento esta fuera de rango");
+            return;
+        }
+        if (validateEmail(email)) {
+            alert('El formato del correo electrónico es incorrecto.');
             return;
         }
 
@@ -126,6 +88,7 @@ const Register = () => {
         userServices.save(formData)
             .then((response) => {
                 console.log("Usuario ha sido añadido.", response.data);
+                alert('Usuario registrado con éxito.');
                 navigate("/");
             })
             .catch((error) => {
@@ -159,8 +122,7 @@ const Register = () => {
                         <Typography variant="h6" gutterBottom>
                             Formulario de Registro
                         </Typography>
-                        <Box sx={{display: 'flex', gap: '10px' }}>
-                            <Box sx={{ padding: '10px', width: '450px' }}>
+                        <Box sx={{ display: 'flex', gap: '10px'}}>
                                 <TextField
                                     label="RUT"
                                     value={rut}
@@ -171,14 +133,7 @@ const Register = () => {
                                     placeholder="Ej: 12345678-9"
                                     required
                                 />
-                                {rutError && (
-                                    <Typography variant="body2" color="error" style={{ marginTop: '4px', fontSize: '0.55rem' }}>
-                                        {rutErrorMessage}
-                                    </Typography>
-                                )}
-                            </Box>
 
-                            <Box sx={{ marginBottom: '5px', padding: '10px', width: '450px' }}>
                                 <TextField
                                     label="Correo Electrónico"
                                     value={email}
@@ -193,12 +148,6 @@ const Register = () => {
                                     type="email"
                                     required
                                 />
-                                {emailError && (
-                                    <Typography variant="body2" color="error" style={{ marginTop: '4px', fontSize: '0.55rem' }}>
-                                        {emailErrorMessage}
-                                    </Typography>
-                                )}
-                            </Box>
                         </Box>
                         <Box sx={{ display: 'flex', gap: '10px' }}>
                             <TextField label="Nombre"
@@ -245,11 +194,6 @@ const Register = () => {
                                 required
                                 style={{ width: '30%' }}
                             />
-                            {birthdateError && (
-                                <Typography variant="body3" color="error" style={{ fontSize: '0.55rem' }}>
-                                    {birthdateErrorMessage}
-                                </Typography>
-                            )}
                         </Box>
 
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -260,11 +204,6 @@ const Register = () => {
                                 fullWidth
                                 margin="normal"
                             />
-                            {fileError && (
-                                <Typography variant="body2" color="error" style={{ fontSize: '0.55rem' }}>
-                                    {fileErrorMessage}
-                                </Typography>
-                            )}
                         </Box>
 
                         <Button variant="contained" color="primary"

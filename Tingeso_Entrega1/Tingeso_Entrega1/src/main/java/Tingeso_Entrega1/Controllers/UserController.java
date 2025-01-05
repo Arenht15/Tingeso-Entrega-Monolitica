@@ -30,22 +30,7 @@ public class UserController {
             @RequestParam("birthdate") String birthdate,
             @RequestParam("identification") MultipartFile identification) {
 
-        // Crear un nuevo usuario con los datos recibidos
-        User user = new User();
-        user.setRut(rut);
-        user.setEmail(email);
-        user.setName(name);
-        user.setSurname(surname);
-        user.setBirthdate(LocalDate.parse(birthdate));
-        // File -> byte[]
-        try {
-            user.setIdentification(identification.getBytes());
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
-        }
-
-        user = userServices.saveUser(user);
+        User user = userServices.saveUser(rut, email, name, surname, birthdate, identification);
         return ResponseEntity.ok(user);
     }
 
@@ -59,11 +44,6 @@ public class UserController {
     public ResponseEntity<User> searchUser(@RequestParam String rut){
         User bandera = userServices.searchUser(rut);
         return ResponseEntity.ok(bandera);
-    }
-
-    @PostMapping(value = "/saveUser")
-    public User saveUser(@RequestBody User user){
-        return userServices.saveUser(user);
     }
 
     @PutMapping("/updateUser")

@@ -2,10 +2,14 @@ package Tingeso_Entrega1.Services;
 
 import Tingeso_Entrega1.Entities.Credit;
 import Tingeso_Entrega1.Entities.SavingCapacity;
+import Tingeso_Entrega1.Entities.User;
 import Tingeso_Entrega1.Repositories.CreditRepository;
+import Tingeso_Entrega1.Services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.function.IntPredicate;
@@ -16,13 +20,89 @@ public class CreditServices {
     private CreditRepository creditRepository;
     @Autowired
     private SavingCapacityServices savingCapacityServices;
+    @Autowired
+    private UserServices userServices;
 
     public List<Credit> getCredits(){
         return creditRepository.findCredits();
     }
-    public Credit saveCredit(Credit c) {
-        creditRepository.save(c);
-        return c;
+    public Credit save(Long id_user, Integer type, Double amount, Integer term,
+                          Double rate, Double cuota, String birthday, Double porcentaje,
+                          String rut) {
+        Credit sol = new Credit();
+        sol.setId_user(id_user);
+        sol.setRut(rut);
+        sol.setType(type);
+        sol.setAmount(amount);
+        sol.setTerm(term);
+        sol.setRate(rate);
+        sol.setCuota(cuota);
+        sol.setYears(calculateYears(LocalDate.parse(birthday)));
+        User cliente = userServices.getUser(id_user);
+        sol.setIdentidadFile(cliente.getIdentification());
+        sol.setPorcent(porcentaje);
+        try {
+            sol = creditRepository.save(sol);
+            return sol;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Credit updateSolicitud(Long id, Double ingress, Integer statusDicom, Integer Seniority,
+                                     Double IngressAcum, Double deudas, MultipartFile LaboralFile,
+                                     MultipartFile dicomFile, MultipartFile ingressFile, MultipartFile deudasFile,
+                                     MultipartFile AhorroFile, Integer TipoEmpleo, Long idSc){
+        Credit credit = searchCredit(id);
+        credit.setIngress(ingress);
+        credit.setStatusDicom(statusDicom);
+        credit.setSeniority(Seniority);
+        credit.setIngressAcum(IngressAcum);
+        credit.setAmountDebs(deudas);
+        credit.setId_savingCapacity(idSc);
+        credit.setTypeJob(TipoEmpleo);
+        credit.setAprovedApplication(-1);
+
+        try {
+            credit.setPayFile(LaboralFile.getBytes());
+            credit.setHistDicom(dicomFile.getBytes());
+            credit.setIngressFile(ingressFile.getBytes());
+            credit.setDebs(deudasFile.getBytes());
+            credit.setSavingCapacityFile(AhorroFile.getBytes());
+        } catch (IOException e) {
+            return null;
+        }
+
+        try {
+            creditRepository.save(credit);
+            return credit;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void actualizaSolicitud(Long id, Double ingress, Integer statusDicom, Integer Seniority,
+                                   Double IngressAcum, Double deudas, Integer years, Integer TipoEmpleo){
+        Credit credit = searchCredit(id);
+        credit.setIngress(ingress);
+        credit.setStatusDicom(statusDicom);
+        credit.setSeniority(Seniority);
+        credit.setIngressAcum(IngressAcum);
+        credit.setAmountDebs(deudas);
+        credit.setTypeJob(TipoEmpleo);
+        credit.setYears(years);
+        creditRepository.save(credit);
+    }
+
+    public Credit updateStatus(Long id) {
+        try {
+            Credit credit = searchCredit(id);
+            credit.setAprovedApplication(2);
+            creditRepository.save(credit);
+            return credit;
+        } catch (Exception e) {
+            return null;
+        }
     }
     public Credit searchCredit(Long id){
         try {

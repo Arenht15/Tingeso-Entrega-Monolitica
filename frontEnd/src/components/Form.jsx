@@ -1,8 +1,19 @@
 import React, {useState} from 'react';
-import {AppBar, Toolbar, Typography, Button, TextField, MenuItem, Box} from '@mui/material';
+import {
+    AppBar,
+    Toolbar,
+    Typography,
+    Button,
+    TextField,
+    MenuItem,
+    Box,
+    DialogTitle,
+    DialogContent,
+    DialogContentText, DialogActions, Dialog
+} from '@mui/material';
 import {useNavigate, useParams} from "react-router-dom";
-
 import creditServices from "../services/CreditServices.js";
+import savingCapacityServices from "../services/SavingCapacityServices.js";
 
 
 const Form = () => {
@@ -15,13 +26,14 @@ const Form = () => {
     const [Seniority, setSeniority] = React.useState(-1);
     const [IngressAcum, setIngressAcum] = React.useState(0.0);
     const [amountDebs, setAmountDebs] = React.useState(-1.0);
-    const [MontoActual, setMontoActual] = useState(0.0);
+    const [MontoActual, setMontoActual] = useState(-1.0);
     const [Antiguedad, setAntiguedad] = useState(-1);
-    const [MontoAcumulado, setMontoAcumulado] = useState(0.0);
+    const [MontoAcumulado, setMontoAcumulado] = useState(-1.0);
     const [MontoAhorro, setMontoAhorro] = useState(Array(12).fill(''));
     const [AbonoAhorro, setAbonoAhorro] = useState(Array(12).fill(''));
     const [RetiroAhorro, setRetiroAhorro] = useState(Array(12).fill(''));
     const [TipoEmpleo, setTipoEmpleo] = useState('');
+    const [open, setOpen] = useState(false);
     // Estados para los archivos subidos
     const [payFile, setPayFile] = React.useState(null);
     const [dicomFile, setDicomfile] = React.useState(null);
@@ -47,7 +59,7 @@ const Form = () => {
 
         if (Ingress === 0.0 || Seniority === -1 || IngressAcum === 0.0 ||
             amountDebs === -1.0 || payFile === null || dicomFile === null ||
-            ingressFile === null || debs === null || MontoActual === 0.0 || Antiguedad === -1 || MontoAcumulado === 0.0 || TipoEmpleo === '' ||
+            ingressFile === null || debs === null || MontoActual === -1.0 || Antiguedad === -1 || MontoAcumulado === -1.0 || TipoEmpleo === '' ||
             MontoAhorro.some(value => value === '') || AbonoAhorro.some(value => value === '') || RetiroAhorro.some(value => value === '') || AhorroFile === null) {
             console.log("Valor de los campos: ", Ingress, Seniority, IngressAcum, amountDebs, payFile, dicomFile, ingressFile, debs);
             alert("Debe completar todos los campos");
@@ -64,31 +76,41 @@ const Form = () => {
         formData.append("histDicom", dicomFile);
         formData.append("ingressFile", ingressFile);
         formData.append("debs", debs);
-        formData.append("MontoActual", MontoActual);
-        formData.append("Antiguedad", Antiguedad);
-        formData.append("MontoAcumulado", MontoAcumulado);
+
+        const formData2 = new FormData();
+        formData2.append("MontoActual", MontoActual);
+        formData2.append("Antiguedad", Antiguedad);
+        formData2.append("MontoAcumulado", MontoAcumulado);
         MontoAhorro.forEach((value) => {
-            formData.append("MontoAhorro", value); // Esto envía múltiples parámetros con el mismo nombre
+            formData2.append("MontoAhorro", value); // Esto envía múltiples parámetros con el mismo nombre
         });
         AbonoAhorro.forEach((value) => {
-            formData.append("AbonoAhorro", value); // Esto envía múltiples parámetros con el mismo nombre
+            formData2.append("AbonoAhorro", value); // Esto envía múltiples parámetros con el mismo nombre
         });
         RetiroAhorro.forEach((value) => {
-            formData.append("RetiroAhorro", value); // Esto envía múltiples parámetros con el mismo nombre
+            formData2.append("RetiroAhorro", value); // Esto envía múltiples parámetros con el mismo nombre
         });
         formData.append("AhorroFile", AhorroFile);
         formData.append("TipoEmpleo", TipoEmpleo);
 
-        creditServices.updateCredit(formData)
+        savingCapacityServices.createSavingCapacity(formData2)
             .then((response) => {
-                console.log("Credito actualizado: ", response.data);
-                navigate("/");
-            })
-            .catch((e) => {
+                formData.append("idSc", response.data.id)
+                creditServices.updateCredit(formData)
+                    .then((response2) => {
+                        console.log("Credito actualizado: ", response2.data);
+                        alert("Solicitud enviada con éxito.");
+                        navigate("/");
+                    })
+                    .catch((e) => {
+                        console.error("No se pudo actualizar el credito.", e);
+                        alert("No se pudo actualizar el crédito. Inténtalo de nuevo.");
+                    });
+            }).catch((e) => {
                 console.error("No se pudo actualizar el credito.", e);
-                // Aquí podrías mostrar un mensaje de error al usuario
                 alert("No se pudo actualizar el crédito. Inténtalo de nuevo.");
-            });
+            }
+        )
     }
 
 
@@ -120,18 +142,22 @@ const Form = () => {
                         placeholder="Ej: 750000"
                         required
                     />
-                    <TextField
-                        label="Documento verificacion Ingresos"
-                        type={"file"}
-                        acept={".pdf"}
-                        onChange={e => handleFileChange(e, setIngressfile)}
-                        variant="outlined"
+                    <Button
+                        variant="contained"
+                        component="label"
                         fullWidth
-                        margin="normal"
-                        placeholder="Ej: 12345678-9"
-                        InputLabelProps={{ shrink: true }}
+                        margin="dense"
                         required
-                    />
+                        sx={{ textAlign: 'center', width: '40%', backgroundColor: '#17cb17', color: 'white' }}
+                    >
+                        {ingressFile ? `Archivo subido: ${ingressFile.name}` : "Subir Documento Ingreso"}
+                        <input
+                            type="file"
+                            accept=".pdf"
+                            hidden
+                            onChange={e => handleFileChange(e, setIngressfile)}
+                        />
+                    </Button>
                 </Box>
                 <Box sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                     <Typography variant="h8" gutterBottom sx={{ marginRight: '20px' }}>
@@ -151,18 +177,22 @@ const Form = () => {
                         <MenuItem value={1}>Sin Deudas impagas</MenuItem>
                         <MenuItem value={0}>Con Deudas impagas</MenuItem>
                     </TextField>
-                    <TextField
-                        label="Documento Historial Crediticio"
-                        type={"file"}
-                        acept={".pdf"}
-                        onChange={e => handleFileChange(e, setDicomfile)}
-                        variant="outlined"
+                    <Button
+                        variant="contained"
+                        component="label"
                         fullWidth
-                        margin="normal"
-                        placeholder="Ej: 12345678-9"
-                        InputLabelProps={{ shrink: true }}
+                        margin="dense"
                         required
-                    />
+                        sx={{ textAlign: 'center', width: '40%', backgroundColor: '#17cb17', color: 'white' }}
+                    >
+                        {dicomFile ? `Archivo subido: ${dicomFile.name}` : "Subir Documento Dicom"}
+                        <input
+                            type="file"
+                            accept=".pdf"
+                            hidden
+                            onChange={e => handleFileChange(e, setDicomfile)}
+                        />
+                    </Button>
 
                 </Box>
                 <Box sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -179,13 +209,14 @@ const Form = () => {
                         fullWidth
                         margin="normal"
                         required
+                        sx={{ width: '60%' }}
                     >
-                        <MenuItem value={1}>Trabajador independiente</MenuItem>
-                        <MenuItem value={0}>Trabajador Asalariado</MenuItem>
+                        <MenuItem value={1}>Independiente</MenuItem>
+                        <MenuItem value={0}>Asalariado</MenuItem>
                     </TextField>
 
                     <TextField
-                        label="Antiguedad En empleo Actual (Años)"
+                        label="Años de Antiguedad"
                         value={Seniority >= 0 ? Seniority : ""}
                         onChange={e => setSeniority(e.target.value.replace(/[^0-9]/g, ''))}
                         variant="outlined"
@@ -193,9 +224,10 @@ const Form = () => {
                         margin="normal"
                         placeholder="Ej: 3"
                         required
+                        sx={{ width: '55%' }}
                     />
                     <TextField
-                        label="Ingresos Acumulados en 1 año"
+                        label="Ingresos Total en 1 año"
                         value={IngressAcum > 0 ? IngressAcum : ""}
                         onChange={e => setIngressAcum(e.target.value.replace(/[^0-9]/g, ''))}
                         variant="outlined"
@@ -203,18 +235,24 @@ const Form = () => {
                         margin="normal"
                         placeholder="Ej: 6000000"
                         required
+                        sx={{ width: '60%' }}
                     />
-                    <TextField
-                        label="Documento verificacion antiguedad e ingresos"
-                        type={"file"}
-                        acept={".pdf"}
-                        onChange={e => handleFileChange(e, setPayFile)}
-                        variant="outlined"
+                    <Button
+                        variant="contained"
+                        component="label"
                         fullWidth
-                        margin="normal"
-                        InputLabelProps={{ shrink: true }}
+                        margin="dense"
                         required
-                    />
+                        sx={{ textAlign: 'center', width: '60%', backgroundColor: '#17cb17', color: 'white' }}
+                    >
+                        {payFile ? `Archivo subido: ${payFile.name}` : "Subir Documento Laboral"}
+                        <input
+                            type="file"
+                            accept=".pdf"
+                            hidden
+                            onChange={e => handleFileChange(e, setPayFile)}
+                        />
+                    </Button>
                 </Box>
                 <Box sx={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
                     <Typography variant="h8" gutterBottom sx={{ marginRight: '30px', alignItems: "center"}}>
@@ -230,17 +268,22 @@ const Form = () => {
                         margin="normal"
                         required
                     />
-                    <TextField
-                        label="Documento verificacion Deudas"
-                        type={"file"}
-                        acept={".pdf"}
-                        onChange={e => handleFileChange(e, setDebs)}
-                        variant="outlined"
+                    <Button
+                        variant="contained"
+                        component="label"
                         fullWidth
-                        margin="normal"
-                        InputLabelProps={{ shrink: true }}
+                        margin="dense"
                         required
-                    />
+                        sx={{ textAlign: 'center', width: '40%', backgroundColor: '#17cb17', color: 'white' }}
+                    >
+                        {debs ? `Archivo subido: ${debs.name}` : "Subir Documento de las Deudas"}
+                        <input
+                            type="file"
+                            accept=".pdf"
+                            hidden
+                            onChange={e => handleFileChange(e, setDebs)}
+                        />
+                    </Button>
                 </Box>
             </Box>
 
@@ -255,14 +298,14 @@ const Form = () => {
                     </Typography>
                     <TextField
                         label="Monto Actual"
-                        value={MontoActual >= 0 ? MontoActual : "" || ""}
+                        value={MontoActual >= 0 ? MontoActual : ""}
                         onChange={e => setMontoActual(e.target.value.replace(/[^0-9]/g, ''))}
                         variant="outlined"
                         margin="dense"
                         required
                     />
                     <TextField
-                        label="Años de antiguedad de la cuenta"
+                        label="Años de Antiguedad"
                         value={Antiguedad >= 0 ? Antiguedad : ""}
                         onChange={e => setAntiguedad(e.target.value.replace(/[^0-9]/g, ''))}
                         variant="outlined"
@@ -270,27 +313,34 @@ const Form = () => {
                         required
                     />
                     <TextField
-                        label="Monto Acumulado de la cuenta"
-                        value={MontoAcumulado >= 0 ? MontoAcumulado : "" || ""}
+                        label="Monto Acumulado"
+                        value={MontoAcumulado >= 0 ? MontoAcumulado : ""}
                         onChange={e => setMontoAcumulado(e.target.value.replace(/[^0-9]/g, ''))}
                         variant="outlined"
                         margin="dense"
                         required
                     />
-                    <TextField
-                        label="Documento verificacion de la cuenta"
-                        type={"file"}
-                        acept={".pdf"}
-                        onChange={e => handleFileChange(e, setAhorroFile)}
-                        variant="outlined"
+                    <Button
+                        variant="contained"
+                        component="label"
+                        fullWidth
                         margin="dense"
                         required
-                    />
+                        sx={{ textAlign: 'center', width: '40%', backgroundColor: '#17cb17', color: 'white' }}
+                    >
+                        {AhorroFile ? `Archivo subido: ${AhorroFile.name}` : "Subir Documento de la cuenta"}
+                        <input
+                            type="file"
+                            accept=".pdf"
+                            hidden
+                            onChange={e => handleFileChange(e, setAhorroFile)}
+                        />
+                    </Button>
 
                 </Box>
                 <Box sx={{ textAlign: 'center', marginTop: "20px"}}>
                     <Typography variant="h8" gutterBottom sx={{ marginRight: '30px', alignItems: "center"}}>
-                        Monto de los últimos 12 meses
+                        Monto Final de los últimos 12 meses
                     </Typography>
 
                     <Box sx={{ display: 'flex', gap: '2px', flexWrap: 'wrap', alignItems: "center" }}>
@@ -352,12 +402,42 @@ const Form = () => {
                     </Box>
                 </Box>
             </Box>
+            <Box sx={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '20px' }}>
+                <Button
+                    variant="contained"
+                    sx={{ backgroundColor: '#0b8d0b', color: 'white', flex: 1, margin: '0 10px' }}
+                    onClick={() => navigate("/")}
+                >
+                    Cancelar
+                </Button>
             <Button
-                style={{ backgroundColor: '#0b8d0b', color: 'white', flex: 1, marginTop: "10px" }}
-                onClick={(e) => UpdateCredit(e)}
+                variant="contained"
+                sx={{ backgroundColor: '#0b8d0b', color: 'white', flex: 1, margin: '0 10px' }}
+                onClick={() => setOpen(true)}
             >
-                Enviar
+                Enviar Solicitud
             </Button>
+            </Box>
+            <Dialog
+                open={open}
+                onClose={() => setOpen(false)}
+                aria-hidden={!open}
+            >
+                <DialogTitle>{"Confirmar Documentación Pendiente"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        ¿Estás seguro que quieres enviar la solicitud?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpen(false)} color="primary">
+                        Cancelar
+                    </Button>
+                    <Button onClick={UpdateCredit} color="primary" autoFocus>
+                        Confirmar
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             <style>{`
                       .full-height {

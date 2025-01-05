@@ -9,12 +9,22 @@ import Tingeso_Entrega1.Services.SavingCapacityServices;
 import java.util.List;
 
 @RestController
-@RequestMapping("/prestabanco/SavingCapacity")
+@RequestMapping("/prestabanco/savingCapacity/")
 @CrossOrigin(origins = "*")
 public class SavingCapacityController {
 
     @Autowired
     private SavingCapacityServices savingCapacityServices;
+
+    @PostMapping("/save")
+    public ResponseEntity<SavingCapacity> saveSavingCapacity(@RequestParam("MontoActual") Double scAmount,
+                                                             @RequestParam("Antiguedad") Integer Antiguedad,
+                                                             @RequestParam("MontoAcumulado") Double amountAcum,
+                                                             @RequestParam("MontoAhorro") List<Double> ahorro,
+                                                             @RequestParam("AbonoAhorro") List<Double> abono,
+                                                             @RequestParam("RetiroAhorro") List<Double> retiro) {
+        return ResponseEntity.ok(savingCapacityServices.save(scAmount, Antiguedad, amountAcum, ahorro, abono, retiro));
+    }
 
     @GetMapping("/searchSavingCapacity/{id}")
     public ResponseEntity<SavingCapacity> searchSavingCapacity(@PathVariable Long id) {

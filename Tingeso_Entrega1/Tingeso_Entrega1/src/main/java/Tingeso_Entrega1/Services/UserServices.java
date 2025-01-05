@@ -5,16 +5,20 @@ import Tingeso_Entrega1.Repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
-
-import static java.lang.Math.round;
 
 @Service
 public class UserServices {
     @Autowired
     private UserRepository userRepository;
+
+    public User getUser(Long id){
+        return userRepository.findById(id).get();
+    }
 
     public Double simulateCredit(Integer type, Double amount, Integer term, Double rate) {
         Double M = 0.0;
@@ -80,14 +84,30 @@ public class UserServices {
         return userRepository.findAll();
     }
 
-    public User saveUser(User user){
-        return userRepository.save(user);
+    public User saveUser(String rut, String email, String name, String surname, String birthdate, MultipartFile identification) {
+        User user = new User();
+        user.setRut(rut);
+        user.setEmail(email);
+        user.setName(name);
+        user.setSurname(surname);
+        user.setBirthdate(LocalDate.parse(birthdate));
+        // File -> byte[]
+        try {
+            user.setIdentification(identification.getBytes());
+        } catch (IOException e) {
+            return null;
+        }
+        try{
+            user = userRepository.save(user);
+            return user;
+        }catch (Exception e){
+            return null;
+        }
     }
 
     public User updateUser(User user) {
         return userRepository.save(user);
     }
-
 }
 
 

@@ -32,43 +32,6 @@ public class CreditServicesTest {
      void setUp(){
           MockitoAnnotations.openMocks(this);
      }
-     @Test
-     void saveApplication() {
-         Credit credit = new Credit();
-         credit.setId_user(1L);
-         credit.setAmountDebs(100.0);
-         credit.setCuota(5.0);
-         credit.setIngress(500.0);
-         credit.setStatusDicom(-1);
-         credit.setAprovedDebs(1);
-         credit.setAprovedFeeIncome(1);
-         when(creditRepository.save(credit)).thenReturn(credit);
-         assertThat(creditServices.saveCredit(credit)).isEqualTo(credit);
-     }
-
-     @Test
-    void saveApplication2(){
-        Credit credit1 = new Credit();
-        Credit credit2 = new Credit();
-        credit1.setId_user(1L);
-        credit1.setAmountDebs(100.0);
-        credit1.setCuota(5.0);
-        credit1.setIngress(500.0);
-        credit1.setStatusDicom(-1);
-        credit1.setAprovedDebs(1);
-        credit1.setAprovedFeeIncome(1);
-        credit2.setId_user(1L);
-        credit2.setAmountDebs(100.0);
-        credit2.setCuota(5.0);
-        credit2.setIngress(500.0);
-        credit2.setStatusDicom(-1);
-        credit2.setAprovedDebs(1);
-        credit2.setAprovedFeeIncome(1);
-        when(creditRepository.save(credit1)).thenReturn(credit1);
-        when(creditRepository.save(credit2)).thenReturn(credit2);
-        assertThat(creditServices.saveCredit(credit1)).isEqualTo(credit1);
-        assertThat(creditServices.saveCredit(credit2)).isEqualTo(credit2);
-    }
 
     @Test
     void getCredits(){

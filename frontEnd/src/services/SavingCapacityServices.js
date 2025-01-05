@@ -1,11 +1,19 @@
 import httpClient from "../http-commons.js";
 
+const createSavingCapacity = (formData) => {
+    return httpClient.post('/prestabanco/savingCapacity/save', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+}
+
 const getSavingCapacity = (id) => {
-    return httpClient.get(`/prestabanco/SavingCapacity/searchSavingCapacity/${id}`);
+    return httpClient.get(`/prestabanco/savingCapacity/searchSavingCapacity/${id}`);
 }
 
 const updateSavingCapacity = (formData) => {
-    return httpClient.put('/prestabanco/SavingCapacity/update', formData, {
+    return httpClient.put('/prestabanco/savingCapacity/update', formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -14,5 +22,6 @@ const updateSavingCapacity = (formData) => {
 
 export default {
     getSavingCapacity,
-    updateSavingCapacity
+    updateSavingCapacity,
+    createSavingCapacity
 }

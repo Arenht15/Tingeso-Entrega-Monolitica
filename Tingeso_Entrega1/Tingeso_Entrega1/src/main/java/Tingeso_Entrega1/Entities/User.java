@@ -7,8 +7,6 @@ import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "users")

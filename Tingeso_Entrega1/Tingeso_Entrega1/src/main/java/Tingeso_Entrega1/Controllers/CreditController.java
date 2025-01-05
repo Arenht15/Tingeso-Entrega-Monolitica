@@ -40,24 +40,12 @@ public class CreditController {
             @RequestParam("Porcentaje") Double porcentaje,
             @RequestParam("rut") String rut){
 
-        User user = userServices.searchUser(rut);
-        Credit credit = new Credit();
-        credit.setId_user(id_user);
-        credit.setRut(rut);
-        credit.setType(type);
-        credit.setAmount(amount);
-        credit.setTerm(term);
-        credit.setRate(rate);
-        credit.setCuota(cuota);
-        credit.setYears(creditServices.calculateYears(LocalDate.parse(birthday)));
-        credit.setIdentidadFile(user.getIdentification());
-        credit.setPorcent(porcentaje);
-        credit = creditServices.saveCredit(credit);
-        return ResponseEntity.ok(credit);
+        Credit c = creditServices.save(id_user, type, amount,
+                term, rate, cuota, birthday, porcentaje, rut);
+        return ResponseEntity.ok(c);
     }
-
     @PutMapping("/Part1")
-    public ResponseEntity<Credit> Part1(
+    public ResponseEntity<Credit> updateSolicitud(
             @RequestParam("id") Long id,
             @RequestParam("Ingress") Double ingress,
             @RequestParam("statusDicom") Integer statusDicom,
@@ -68,68 +56,26 @@ public class CreditController {
             @RequestParam("histDicom") MultipartFile dicomFile,
             @RequestParam("ingressFile") MultipartFile ingressFile,
             @RequestParam("debs") MultipartFile deudasFile,
-            @RequestParam("MontoActual") Double amountSc,
-            @RequestParam("MontoAcumulado") Double amountAcum,
-            @RequestParam("Antiguedad") Integer Antiguedad,
-            @RequestParam("MontoAhorro") List<Double> ahorro,
-            @RequestParam("AbonoAhorro") List<Double> abono,
-            @RequestParam("RetiroAhorro") List<Double> retiro,
             @RequestParam("AhorroFile") MultipartFile AhorroFile,
-            @RequestParam("TipoEmpleo") Integer TipoEmpleo){
-
-        // Create a new SavingCapacity object
-        SavingCapacity sc = new SavingCapacity();
-        sc.setScAmount(amountSc);
-        sc.setSavingAmountAcum(amountAcum);
-        sc.setSavingYears(Antiguedad);
-        sc.setSavingHistory(ahorro);
-        sc.setDepositHistory(abono);
-        sc.setWithdrawalHistory(retiro);
-        SavingCapacity sc2 = savingCapacityServices.saveSavingCapacity(sc);
-
-        // Search the credit by id, add the SavingCapacity object and other data
-        Credit credit = creditServices.searchCredit(id);
-        credit.setIngress(ingress);
-        credit.setStatusDicom(statusDicom);
-        credit.setSeniority(Seniority);
-        credit.setIngressAcum(IngressAcum);
-        credit.setAmountDebs(deudas);
-        credit.setId_savingCapacity(sc2.getId());
-        credit.setTypeJob(TipoEmpleo);
-        credit.setAprovedApplication(-1);
-
-        try {
-            credit.setPayFile(LaboralFile.getBytes());
-            credit.setHistDicom(dicomFile.getBytes());
-            credit.setIngressFile(ingressFile.getBytes());
-            credit.setDebs(deudasFile.getBytes());
-            credit.setSavingCapacityFile(AhorroFile.getBytes());
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
-        }
-        return ResponseEntity.ok(creditServices.saveCredit(credit));
+            @RequestParam("TipoEmpleo") Integer TipoEmpleo,
+            @RequestParam("idSc") Long idSc){
+        Credit bandera = creditServices.updateSolicitud(id, ingress, statusDicom,
+                Seniority, IngressAcum, deudas, LaboralFile, dicomFile,
+                ingressFile, deudasFile, AhorroFile, TipoEmpleo, idSc);
+        return ResponseEntity.ok(bandera);
     }
 
     @PutMapping("/EvaluarCredit")
     public void EvaluarCredit(@RequestParam("id") Long id,
                               @RequestParam("Ingress") Double ingress,
-            @RequestParam("statusDicom") Integer statusDicom,
-            @RequestParam("seniority") Integer Seniority,
-            @RequestParam("ingressAcum") Double ingressAcum,
-            @RequestParam("amountDebs") Double deudas,
-            @RequestParam("years") Integer years,
-            @RequestParam("typejob") Integer TipoEmpleo){
+                              @RequestParam("statusDicom") Integer statusDicom,
+                              @RequestParam("seniority") Integer Seniority,
+                              @RequestParam("ingressAcum") Double ingressAcum,
+                              @RequestParam("amountDebs") Double deudas,
+                              @RequestParam("years") Integer years,
+                              @RequestParam("typejob") Integer TipoEmpleo){
 
-        Credit credit = creditServices.searchCredit(id);
-        credit.setIngress(ingress);
-        credit.setStatusDicom(statusDicom);
-        credit.setSeniority(Seniority);
-        credit.setIngressAcum(ingressAcum);
-        credit.setAmountDebs(deudas);
-        credit.setTypeJob(TipoEmpleo);
-        credit.setYears(years);
-        creditServices.calculateCredit(credit);
+         creditServices.actualizaSolicitud(id, ingress, statusDicom, Seniority, ingressAcum, deudas, years, TipoEmpleo);
     }
 
     @GetMapping("/getCredits")
@@ -145,9 +91,7 @@ public class CreditController {
 
     @PutMapping("/updateStatus/{id}")
     public ResponseEntity<Credit> updateCredit(@PathVariable Long id){
-        Credit credit = creditServices.searchCredit(id);
-        credit.setAprovedApplication(2);
-        return ResponseEntity.ok(creditServices.saveCredit(credit));
+        return ResponseEntity.ok(creditServices.updateStatus(id));
     }
 
     @GetMapping("/getCreditByUserId/{userId}")

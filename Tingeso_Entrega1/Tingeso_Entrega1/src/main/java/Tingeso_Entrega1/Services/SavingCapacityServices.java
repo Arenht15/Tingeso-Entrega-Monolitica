@@ -12,6 +12,24 @@ public class SavingCapacityServices {
     @Autowired
     private SavingCapacityRepository savingCapacityRepository;
 
+    public SavingCapacity save(Double scAmount, Integer Antiguedad, Double amountAcum,
+                               List<Double> ahorro, List<Double> abono, List<Double> retiro){
+        SavingCapacity sc = new SavingCapacity();
+        sc.setScAmount(scAmount);
+        sc.setSavingAmountAcum(amountAcum);
+        sc.setSavingYears(Antiguedad);
+        sc.setSavingHistory(ahorro);
+        sc.setDepositHistory(abono);
+        sc.setWithdrawalHistory(retiro);
+        try {
+            savingCapacityRepository.save(sc);
+            return sc;
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
+
     public SavingCapacity saveSavingCapacity(SavingCapacity sc){
         return savingCapacityRepository.save(sc);
     }

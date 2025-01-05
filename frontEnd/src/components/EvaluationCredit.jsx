@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {AppBar, Toolbar, Typography, Button, TextField, MenuItem, Box} from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, TextField, MenuItem, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import {useNavigate, useParams} from "react-router-dom";
 
 import creditServices from "../services/CreditServices.js";
@@ -23,6 +23,7 @@ const EvaluationCredit = () => {
     const [Year, setYear] = useState(0);
     const [idAux, setIdAux] = useState(0);
     const [TipoEmpleo, setTipoEmpleo] = useState('');
+    const [open, setOpen] = useState(false);
     // Estados para los archivos subidos
     const [payFile, setPayFile] = React.useState(null);
     const [dicomFile, setDicomfile] = React.useState(null);
@@ -114,6 +115,7 @@ const EvaluationCredit = () => {
                     .then((response) => {
                         console.log("Capacidad de ahorro actualizada correctamente", response.data);
                         console.log("Crédito actualizado correctamente", response.data);
+                        alert("Crédito evaluado correctamente");
                         navigate('/ListCredit');
                     })
                     .catch((error) => {
@@ -132,6 +134,7 @@ const EvaluationCredit = () => {
         creditServices.updateStatus(id)
             .then((response) => {
                 console.log("Estado de la solicitud actualizado correctamente", response.data);
+                alert("Estado de la solicitud actualizado a documentación pendiente");
                 navigate('/ListCredit');
             })
             .catch((error) => {
@@ -490,23 +493,62 @@ const EvaluationCredit = () => {
                 <Button
                     variant="contained"
                     sx={{ backgroundColor: '#0b8d0b', color: 'white', flex: 1, margin: '0 10px' }}
-                    onClick={handleSubmit}
+                    onClick={() => setOpen(true)}
                 >
                     Evaluar Crédito
                 </Button>
+                <Dialog
+                open={open}
+                    onClose={() => setOpen(false)}
+                >
+                    <DialogTitle>{"Confirmar Evaluación de Crédito"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            ¿Estás seguro de que deseas evaluar el crédito?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setOpen(false)} color="primary">
+                            Cancelar
+                        </Button>
+                        <Button onClick={handleSubmit} color="primary" autoFocus>
+                            Confirmar
+                        </Button>
+                    </DialogActions>
+            </Dialog>
                 <Button
                     variant="contained"
                     sx={{ backgroundColor: '#0b8d0b', color: 'white', flex: 1, margin: '0 10px' }}
-                    onClick={handleDocuemtation}
+                    onClick={() => setOpen(true)}
                 >
                     Documentacion Pendientes
                 </Button>
+                <Dialog
+                    open={open}
+                    onClose={() => setOpen(false)}
+                    aria-hidden={!open}
+                >
+                    <DialogTitle>{"Confirmar Documentación Pendiente"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            ¿Estás seguro de que falta documentos?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setOpen(false)} color="primary">
+                            Cancelar
+                        </Button>
+                        <Button onClick={handleDocuemtation} color="primary" autoFocus>
+                            Confirmar
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Box>
             <style>{`
              .full-height {
                min-height: 100vh;
                display: flex;
-               flex-direction: column; /* Cambiar a columna para que el AppBar esté arriba */
+               flex-direction: column;
                align-items: center;
                justify-content: center;
                position: relative;
