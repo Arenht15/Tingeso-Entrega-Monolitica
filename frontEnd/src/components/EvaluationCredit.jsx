@@ -24,6 +24,7 @@ const EvaluationCredit = () => {
     const [idAux, setIdAux] = useState(0);
     const [TipoEmpleo, setTipoEmpleo] = useState('');
     const [open, setOpen] = useState(false);
+    const [open1, setOpen1] = useState(false);
     // Estados para los archivos subidos
     const [payFile, setPayFile] = React.useState(null);
     const [dicomFile, setDicomfile] = React.useState(null);
@@ -493,13 +494,13 @@ const EvaluationCredit = () => {
                 <Button
                     variant="contained"
                     sx={{ backgroundColor: '#0b8d0b', color: 'white', flex: 1, margin: '0 10px' }}
-                    onClick={() => setOpen(true)}
+                    onClick={() => setOpen1(true)}
                 >
                     Evaluar Crédito
                 </Button>
                 <Dialog
-                open={open}
-                    onClose={() => setOpen(false)}
+                    open={open1}
+                    onClose={() => setOpen1(false)}
                 >
                     <DialogTitle>{"Confirmar Evaluación de Crédito"}</DialogTitle>
                     <DialogContent>
@@ -508,14 +509,14 @@ const EvaluationCredit = () => {
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => setOpen(false)} color="primary">
+                        <Button onClick={() => setOpen1(false)} color="primary">
                             Cancelar
                         </Button>
                         <Button onClick={handleSubmit} color="primary" autoFocus>
                             Confirmar
                         </Button>
                     </DialogActions>
-            </Dialog>
+                </Dialog>
                 <Button
                     variant="contained"
                     sx={{ backgroundColor: '#0b8d0b', color: 'white', flex: 1, margin: '0 10px' }}

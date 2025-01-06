@@ -168,7 +168,7 @@ const Register = () => {
                                 variant="outlined"
                                 fullWidth
                                 margin="dense"
-                                placeholder="Ej: 25"
+                                placeholder="Ej: 1995"
                                 required
                                 style={{ width: '30%' }}
                             />

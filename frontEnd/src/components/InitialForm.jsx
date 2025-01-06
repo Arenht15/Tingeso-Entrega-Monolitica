@@ -58,7 +58,6 @@ const InitialForm = () => {
         userServices.simulateCredit(type, amount, term, rate)
             .then(response => {
                 console.log("Monto simulado: ", response.data);
-                setSimulatedAmount(response.data);
                 if(response.data === 0) {
                     if(type == 1){
                         alert("El interes debe estar entre el rango 3.5% - 5.0%, para una primera vivienda");

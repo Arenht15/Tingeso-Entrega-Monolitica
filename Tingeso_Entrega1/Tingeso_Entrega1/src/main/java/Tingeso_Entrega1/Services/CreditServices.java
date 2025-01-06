@@ -92,6 +92,7 @@ public class CreditServices {
         credit.setTypeJob(TipoEmpleo);
         credit.setYears(years);
         creditRepository.save(credit);
+        calculateCredit(credit);
     }
 
     public Credit updateStatus(Long id) {

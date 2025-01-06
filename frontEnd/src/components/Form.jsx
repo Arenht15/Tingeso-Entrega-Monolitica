@@ -423,7 +423,7 @@ const Form = () => {
                 onClose={() => setOpen(false)}
                 aria-hidden={!open}
             >
-                <DialogTitle>{"Confirmar Documentación Pendiente"}</DialogTitle>
+                <DialogTitle>{"Confirmar envio de solicitud"}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         ¿Estás seguro que quieres enviar la solicitud?

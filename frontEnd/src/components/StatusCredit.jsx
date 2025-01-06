@@ -134,7 +134,7 @@ const StatusCredit = () => {
                   .full-height {
                     min-height: 100vh;
                     display: flex;
-                    flex-direction: column; /* Cambiar a columna para que el AppBar esté arriba */
+                    flex-direction: column;
                     align-items: center;
                     justify-content: center;
                     position: relative;
@@ -145,7 +145,6 @@ const StatusCredit = () => {
                       background-image: radial-gradient(circle, rgba(173, 255, 47, 0.3) 10%, rgba(255, 255, 255, 0) 15%);
                       background-size: 20px 20px;
                       background-color: white;
-                      overflow: hidden;
                   }
                 `}</style>
     </div>
